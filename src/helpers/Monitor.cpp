@@ -1,6 +1,6 @@
 #include "Monitor.hpp"
 #include "LayerSurface.hpp"
-#include "../hyprpicker.hpp"
+#include "../abysspicker.hpp"
 
 SMonitor::SMonitor(SP<CCWlOutput> output_) : output(output_) {
     output->setGeometry([this](CCWlOutput* r, int32_t x, int32_t y, int32_t width_mm, int32_t height_mm, int32_t subpixel, const char* make, const char* model,
@@ -31,7 +31,7 @@ void SMonitor::initSCFrame() {
     pSCFrame->setFlags([this](CCZwlrScreencopyFrameV1* r, uint32_t flags) {
         pLS->scflags = flags;
 
-        g_pHyprpicker->recheckACK();
+        g_pAbysspicker->recheckACK();
     });
     pSCFrame->setReady([this](CCZwlrScreencopyFrameV1* r, uint32_t tv_sec_hi, uint32_t tv_sec_lo, uint32_t tv_nsec) {
         Vector2D transformedSize = pLS->screenBuffer->pixelSize;
@@ -46,14 +46,14 @@ void SMonitor::initSCFrame() {
         int             bytesPerPixel = pLS->screenBuffer->stride / (int)pLS->screenBuffer->pixelSize.x;
         void*           data          = pLS->screenBuffer->data;
         if (bytesPerPixel == 4)
-            g_pHyprpicker->convertBuffer(pLS->screenBuffer);
+            g_pAbysspicker->convertBuffer(pLS->screenBuffer);
         else if (bytesPerPixel == 3) {
-            Debug::log(WARN, "24 bit formats are unsupported, hyprpicker may or may not work as intended!");
-            data                          = g_pHyprpicker->convert24To32Buffer(pLS->screenBuffer);
+            Debug::log(WARN, "24 bit formats are unsupported, abysspicker may or may not work as intended!");
+            data                          = g_pAbysspicker->convert24To32Buffer(pLS->screenBuffer);
             pLS->screenBuffer->paddedData = data;
         } else {
             Debug::log(CRIT, "Unsupported stride/bytes per pixel %i", bytesPerPixel);
-            g_pHyprpicker->finish(1);
+            g_pAbysspicker->finish(1);
         }
 
         cairo_surface_t* oldSurface = cairo_image_surface_create_for_data((unsigned char*)data, CAIRO_FORMAT_ARGB32, pLS->screenBuffer->pixelSize.x, pLS->screenBuffer->pixelSize.y,
@@ -110,12 +110,12 @@ void SMonitor::initSCFrame() {
 
         pLS->screenBuffer = newBuf;
 
-        g_pHyprpicker->renderSurface(pLS);
+        g_pAbysspicker->renderSurface(pLS);
 
         pSCFrame.reset();
     });
     pSCFrame->setFailed([](CCZwlrScreencopyFrameV1* r) {
         Debug::log(CRIT, "Failed to get a Screencopy!");
-        g_pHyprpicker->finish(1);
+        g_pAbysspicker->finish(1);
     });
 }

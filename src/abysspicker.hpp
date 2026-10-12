@@ -16,7 +16,7 @@ enum eOutputMode : uint8_t {
 
 const std::array<uint8_t, 5> numOutputValues = {4, 3, 3, 3, 3};
 
-class CHyprpicker {
+class CAbysspicker {
   public:
     void                                        init();
 
@@ -89,4 +89,4 @@ class CHyprpicker {
   private:
 };
 
-inline std::unique_ptr<CHyprpicker> g_pHyprpicker;
+inline std::unique_ptr<CAbysspicker> g_pAbysspicker;

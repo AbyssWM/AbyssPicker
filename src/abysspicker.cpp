@@ -1,4 +1,4 @@
-#include "hyprpicker.hpp"
+#include "abysspicker.hpp"
 #include "src/debug/Log.hpp"
 #include "src/notify/Notify.hpp"
 #include <cmath>
@@ -7,16 +7,16 @@
 #include <cstdio>
 #include <format>
 #include <mutex>
-#include <hyprutils/math/Vector2D.hpp>
+#include <abyssutils/math/Vector2D.hpp>
 #include <wayland-client-protocol.h>
 #include <xkbcommon/xkbcommon-keysyms.h>
 #include <xkbcommon/xkbcommon.h>
 
 static void sigHandler(int sig) {
-    g_pHyprpicker->m_bRunning.store(false);
+    g_pAbysspicker->m_bRunning.store(false);
 }
 
-void CHyprpicker::init() {
+void CAbysspicker::init() {
     m_pXKBContext = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
     if (!m_pXKBContext)
         Debug::log(ERR, "Failed to create xkb context, keyboard movement not supported");
@@ -40,7 +40,7 @@ void CHyprpicker::init() {
         } else if (strcmp(interface, wl_output_interface.name) == 0) {
             m_mtTickMutex.lock();
 
-            const auto PMONITOR = g_pHyprpicker->m_vMonitors
+            const auto PMONITOR = g_pAbysspicker->m_vMonitors
                                       .emplace_back(std::make_unique<SMonitor>(
                                           makeShared<CCWlOutput>((wl_proxy*)wl_registry_bind((wl_registry*)m_pRegistry->resource(), name, &wl_output_interface, 4))))
                                       .get();
@@ -61,8 +61,8 @@ void CHyprpicker::init() {
                             m_pCursorShapeDevice = makeShared<CCWpCursorShapeDeviceV1>(m_pCursorShapeMgr->sendGetPointer(m_pPointer->resource()));
                     }
                 } else {
-                    Debug::log(CRIT, "Hyprpicker cannot work without a pointer!");
-                    g_pHyprpicker->finish(1);
+                    Debug::log(CRIT, "Abysspicker cannot work without a pointer!");
+                    g_pAbysspicker->finish(1);
                 }
 
                 if (caps & WL_SEAT_CAPABILITY_KEYBOARD) {
@@ -125,7 +125,7 @@ void CHyprpicker::init() {
     finish(1);
 }
 
-void CHyprpicker::finish(int code) {
+void CAbysspicker::finish(int code) {
     m_vLayerSurfaces.clear();
 
     if (m_pWLDisplay) {
@@ -151,7 +151,7 @@ void CHyprpicker::finish(int code) {
     exit(code);
 }
 
-void CHyprpicker::outputColor() {
+void CAbysspicker::outputColor() {
 
     // relative brightness of a color
     // https://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
@@ -261,7 +261,7 @@ void CHyprpicker::outputColor() {
     finish();
 }
 
-void CHyprpicker::recheckACK() {
+void CAbysspicker::recheckACK() {
     for (auto& ls : m_vLayerSurfaces) {
         if ((ls->wantsACK || ls->wantsReload) && ls->screenBuffer) {
             if (ls->wantsACK)
@@ -270,7 +270,7 @@ void CHyprpicker::recheckACK() {
             ls->wantsReload = false;
 
             const auto MONITORSIZE =
-                (ls->screenBuffer && !g_pHyprpicker->m_bNoFractional ? ls->m_pMonitor->size * ls->fractionalScale : ls->m_pMonitor->size * ls->m_pMonitor->scale).round();
+                (ls->screenBuffer && !g_pAbysspicker->m_bNoFractional ? ls->m_pMonitor->size * ls->fractionalScale : ls->m_pMonitor->size * ls->m_pMonitor->scale).round();
 
             if (!ls->buffers[0] || ls->buffers[0]->pixelSize != MONITORSIZE) {
                 Debug::log(TRACE, "making new buffers: size changed to %.0fx%.0f", MONITORSIZE.x, MONITORSIZE.y);
@@ -283,7 +283,7 @@ void CHyprpicker::recheckACK() {
     markDirty();
 }
 
-void CHyprpicker::markDirty() {
+void CAbysspicker::markDirty() {
     for (auto& ls : m_vLayerSurfaces) {
         if (ls->frameCallback)
             continue;
@@ -292,7 +292,7 @@ void CHyprpicker::markDirty() {
     }
 }
 
-SP<SPoolBuffer> CHyprpicker::getBufferForLS(CLayerSurface* pLS) {
+SP<SPoolBuffer> CAbysspicker::getBufferForLS(CLayerSurface* pLS) {
     SP<SPoolBuffer> returns = nullptr;
 
     for (auto i = 0; i < 2; ++i) {
@@ -305,7 +305,7 @@ SP<SPoolBuffer> CHyprpicker::getBufferForLS(CLayerSurface* pLS) {
     return returns;
 }
 
-bool CHyprpicker::setCloexec(const int& FD) {
+bool CAbysspicker::setCloexec(const int& FD) {
     long flags = fcntl(FD, F_GETFD);
     if (flags == -1) {
         return false;
@@ -318,37 +318,37 @@ bool CHyprpicker::setCloexec(const int& FD) {
     return true;
 }
 
-int CHyprpicker::createPoolFile(size_t size, std::string& name) {
+int CAbysspicker::createPoolFile(size_t size, std::string& name) {
     const auto XDGRUNTIMEDIR = getenv("XDG_RUNTIME_DIR");
     if (!XDGRUNTIMEDIR) {
         Debug::log(CRIT, "XDG_RUNTIME_DIR not set!");
-        g_pHyprpicker->finish(1);
+        g_pAbysspicker->finish(1);
     }
 
-    name = std::string(XDGRUNTIMEDIR) + "/.hyprpicker_XXXXXX";
+    name = std::string(XDGRUNTIMEDIR) + "/.abysspicker_XXXXXX";
 
     const auto FD = mkstemp((char*)name.c_str());
     if (FD < 0) {
         Debug::log(CRIT, "createPoolFile: fd < 0");
-        g_pHyprpicker->finish(1);
+        g_pAbysspicker->finish(1);
     }
 
     if (!setCloexec(FD)) {
         close(FD);
         Debug::log(CRIT, "createPoolFile: !setCloexec");
-        g_pHyprpicker->finish(1);
+        g_pAbysspicker->finish(1);
     }
 
     if (ftruncate(FD, size) < 0) {
         close(FD);
         Debug::log(CRIT, "createPoolFile: ftruncate < 0");
-        g_pHyprpicker->finish(1);
+        g_pAbysspicker->finish(1);
     }
 
     return FD;
 }
 
-void CHyprpicker::convertBuffer(SP<SPoolBuffer> pBuffer) {
+void CAbysspicker::convertBuffer(SP<SPoolBuffer> pBuffer) {
     switch (pBuffer->format) {
         case WL_SHM_FORMAT_ARGB8888:
         case WL_SHM_FORMAT_XRGB8888: break;
@@ -394,12 +394,12 @@ void CHyprpicker::convertBuffer(SP<SPoolBuffer> pBuffer) {
         default: {
             Debug::log(CRIT, "Unsupported format %i", pBuffer->format);
         }
-            g_pHyprpicker->finish(1);
+            g_pAbysspicker->finish(1);
     }
 }
 
 // Mallocs a new buffer, which needs to be free'd!
-void* CHyprpicker::convert24To32Buffer(SP<SPoolBuffer> pBuffer) {
+void* CAbysspicker::convert24To32Buffer(SP<SPoolBuffer> pBuffer) {
     uint8_t* newBuffer       = (uint8_t*)malloc((size_t)pBuffer->pixelSize.x * pBuffer->pixelSize.y * 4);
     int      newBufferStride = pBuffer->pixelSize.x * 4;
     uint8_t* oldBuffer       = (uint8_t*)pBuffer->data;
@@ -448,12 +448,12 @@ void* CHyprpicker::convert24To32Buffer(SP<SPoolBuffer> pBuffer) {
         default: {
             Debug::log(CRIT, "Unsupported format for 24bit buffer %i", pBuffer->format);
         }
-            g_pHyprpicker->finish(1);
+            g_pAbysspicker->finish(1);
     }
     return newBuffer;
 }
 
-void CHyprpicker::renderSurface(CLayerSurface* pSurface, bool forceInactive) {
+void CAbysspicker::renderSurface(CLayerSurface* pSurface, bool forceInactive) {
     const auto PBUFFER = getBufferForLS(pSurface);
 
     if (!PBUFFER || !pSurface->screenBuffer) {
@@ -664,7 +664,7 @@ void CHyprpicker::renderSurface(CLayerSurface* pSurface, bool forceInactive) {
     pSurface->rendered = true;
 }
 
-CColor CHyprpicker::getColorFromPixel(CLayerSurface* pLS, Vector2D pix) {
+CColor CAbysspicker::getColorFromPixel(CLayerSurface* pLS, Vector2D pix) {
     pix = pix.floor();
 
     if (pix.x >= pLS->screenBuffer->pixelSize.x || pix.y >= pLS->screenBuffer->pixelSize.y || pix.x < 0 || pix.y < 0)
@@ -682,7 +682,7 @@ CColor CHyprpicker::getColorFromPixel(CLayerSurface* pLS, Vector2D pix) {
     return CColor{.r = px->red, .g = px->green, .b = px->blue, .a = px->alpha};
 }
 
-void CHyprpicker::initKeyboard() {
+void CAbysspicker::initKeyboard() {
     m_pKeyboard->setKeymap([this](CCWlKeyboard* r, wl_keyboard_keymap_format format, int32_t fd, uint32_t size) {
         if (!m_pXKBContext)
             return;
@@ -737,7 +737,7 @@ void CHyprpicker::initKeyboard() {
     });
 }
 
-void CHyprpicker::initMouse() {
+void CAbysspicker::initMouse() {
     m_pPointer->setEnter([this](CCWlPointer* r, uint32_t serial, wl_proxy* surface, wl_fixed_t surface_x, wl_fixed_t surface_y) {
         auto x = wl_fixed_to_double(surface_x);
         auto y = wl_fixed_to_double(surface_y);

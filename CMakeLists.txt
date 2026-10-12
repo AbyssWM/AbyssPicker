@@ -4,15 +4,15 @@ file(READ "${CMAKE_SOURCE_DIR}/VERSION" VER_RAW)
 string(STRIP ${VER_RAW} VERSION)
 
 project(
-  hyprpicker
+  abysspicker
   DESCRIPTION "A wlroots-compatible Wayland color picker that does not suck"
   VERSION ${VERSION})
 
 set(CMAKE_MESSAGE_LOG_LEVEL "STATUS")
 
-add_compile_definitions(HYPRPICKER_VERSION="${VERSION}")
+add_compile_definitions(ABYSSPICKER_VERSION="${VERSION}")
 
-message(STATUS "Configuring hyprpicker!")
+message(STATUS "Configuring abysspicker!")
 
 # Get git info hash and branch
 execute_process(
@@ -65,12 +65,12 @@ pkg_check_modules(
   pango
   pangocairo
   libjpeg
-  hyprutils>=0.2.0
-  hyprwayland-scanner>=0.4.0)
+  abyssutils>=0.2.0
+  abyss-scanner>=0.4.0)
 
 file(GLOB_RECURSE SRCFILES "src/*.cpp")
 
-add_executable(hyprpicker ${SRCFILES})
+add_executable(abysspicker ${SRCFILES})
 
 pkg_get_variable(WAYLAND_PROTOCOLS_DIR wayland-protocols pkgdatadir)
 message(STATUS "Found wayland-protocols at ${WAYLAND_PROTOCOLS_DIR}")
@@ -86,20 +86,20 @@ function(protocolnew protoPath protoName external)
   add_custom_command(
     OUTPUT ${CMAKE_SOURCE_DIR}/protocols/${protoName}.cpp
            ${CMAKE_SOURCE_DIR}/protocols/${protoName}.hpp
-    COMMAND hyprwayland-scanner --client ${path}/${protoName}.xml
+    COMMAND abyss-scanner --client ${path}/${protoName}.xml
             ${CMAKE_SOURCE_DIR}/protocols/
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-  target_sources(hyprpicker PRIVATE protocols/${protoName}.cpp
+  target_sources(abysspicker PRIVATE protocols/${protoName}.cpp
                                     protocols/${protoName}.hpp)
 endfunction()
 function(protocolWayland)
   add_custom_command(
     OUTPUT ${CMAKE_SOURCE_DIR}/protocols/wayland.cpp
            ${CMAKE_SOURCE_DIR}/protocols/wayland.hpp
-    COMMAND hyprwayland-scanner --wayland-enums --client
+    COMMAND abyss-scanner --wayland-enums --client
             ${WAYLAND_SCANNER_DIR}/wayland.xml ${CMAKE_SOURCE_DIR}/protocols/
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
-  target_sources(hyprpicker PRIVATE protocols/wayland.cpp protocols/wayland.hpp)
+  target_sources(abysspicker PRIVATE protocols/wayland.cpp protocols/wayland.hpp)
 endfunction()
 
 protocolwayland()
@@ -113,22 +113,22 @@ protocolnew("stable/xdg-shell" "xdg-shell" false)
 protocolnew("staging/cursor-shape" "cursor-shape-v1" false)
 protocolnew("stable/tablet" "tablet-v2" false)
 
-target_compile_definitions(hyprpicker
+target_compile_definitions(abysspicker
                            PRIVATE "-DGIT_COMMIT_HASH=\"${GIT_COMMIT_HASH}\"")
-target_compile_definitions(hyprpicker PRIVATE "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
+target_compile_definitions(abysspicker PRIVATE "-DGIT_BRANCH=\"${GIT_BRANCH}\"")
 target_compile_definitions(
-  hyprpicker PRIVATE "-DGIT_COMMIT_MESSAGE=\"${GIT_COMMIT_MESSAGE}\"")
-target_compile_definitions(hyprpicker PRIVATE "-DGIT_DIRTY=\"${GIT_DIRTY}\"")
+  abysspicker PRIVATE "-DGIT_COMMIT_MESSAGE=\"${GIT_COMMIT_MESSAGE}\"")
+target_compile_definitions(abysspicker PRIVATE "-DGIT_DIRTY=\"${GIT_DIRTY}\"")
 
-target_link_libraries(hyprpicker rt)
+target_link_libraries(abysspicker rt)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
-target_link_libraries(hyprpicker PkgConfig::deps)
+target_link_libraries(abysspicker PkgConfig::deps)
 
-target_link_libraries(hyprpicker pthread ${CMAKE_THREAD_LIBS_INIT}
+target_link_libraries(abysspicker pthread ${CMAKE_THREAD_LIBS_INIT}
                       wayland-cursor)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES DEBUG)
@@ -143,6 +143,6 @@ if(NOT DEFINED CMAKE_INSTALL_MANDIR)
     set(CMAKE_INSTALL_MANDIR "${CMAKE_INSTALL_PREFIX}/share/man")
 endif()
 
-install(TARGETS hyprpicker)
-install(FILES ${CMAKE_SOURCE_DIR}/doc/hyprpicker.1
+install(TARGETS abysspicker)
+install(FILES ${CMAKE_SOURCE_DIR}/doc/abysspicker.1
         DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)

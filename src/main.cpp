@@ -6,11 +6,11 @@
 
 #include <iostream>
 
-#include "hyprpicker.hpp"
+#include "abysspicker.hpp"
 #include "src/debug/Log.hpp"
 
 static void help() {
-    std::cout << "Hyprpicker usage: hyprpicker [arg [...]].\n\nArguments:\n"
+    std::cout << "Abysspicker usage: abysspicker [arg [...]].\n\nArguments:\n"
               << " -a | --autocopy            | Automatically copies the output to the clipboard (requires wl-clipboard)\n"
               << " -f | --format=fmt          | Specifies the output format (cmyk, hex, rgb, hsl, hsv)\n"
               << " -o | --output-format=fmt   | Specifies how the output color should be formatted e.g. rgb({0}, {1}, {2}) would output rgb(red, green, blue) if --format=rgb\n"
@@ -31,7 +31,7 @@ static void help() {
 }
 
 int main(int argc, char** argv, char** envp) {
-    g_pHyprpicker = std::make_unique<CHyprpicker>();
+    g_pAbysspicker = std::make_unique<CAbysspicker>();
 
     while (true) {
         int                  option_index   = 0;
@@ -61,35 +61,35 @@ int main(int argc, char** argv, char** envp) {
         switch (c) {
             case 'f':
                 if (strcasecmp(optarg, "cmyk") == 0)
-                    g_pHyprpicker->m_bSelectedOutputMode = OUTPUT_CMYK;
+                    g_pAbysspicker->m_bSelectedOutputMode = OUTPUT_CMYK;
                 else if (strcasecmp(optarg, "hex") == 0)
-                    g_pHyprpicker->m_bSelectedOutputMode = OUTPUT_HEX;
+                    g_pAbysspicker->m_bSelectedOutputMode = OUTPUT_HEX;
                 else if (strcasecmp(optarg, "rgb") == 0)
-                    g_pHyprpicker->m_bSelectedOutputMode = OUTPUT_RGB;
+                    g_pAbysspicker->m_bSelectedOutputMode = OUTPUT_RGB;
                 else if (strcasecmp(optarg, "hsl") == 0)
-                    g_pHyprpicker->m_bSelectedOutputMode = OUTPUT_HSL;
+                    g_pAbysspicker->m_bSelectedOutputMode = OUTPUT_HSL;
                 else if (strcasecmp(optarg, "hsv") == 0)
-                    g_pHyprpicker->m_bSelectedOutputMode = OUTPUT_HSV;
+                    g_pAbysspicker->m_bSelectedOutputMode = OUTPUT_HSV;
                 else {
                     Debug::log(NONE, "Unrecognized format %s", optarg);
                     exit(1);
                 }
                 break;
-            case 'o': g_pHyprpicker->m_sOutputFormat = optarg; break;
+            case 'o': g_pAbysspicker->m_sOutputFormat = optarg; break;
             case 'h': help(); exit(0);
-            case 'b': g_pHyprpicker->m_bFancyOutput = false; break;
-            case 'n': g_pHyprpicker->m_bNotify = true; break;
-            case 'a': g_pHyprpicker->m_bAutoCopy = true; break;
-            case 'r': g_pHyprpicker->m_bRenderInactive = true; break;
-            case 'z': g_pHyprpicker->m_bNoZoom = true; break;
-            case 't': g_pHyprpicker->m_bNoFractional = true; break;
+            case 'b': g_pAbysspicker->m_bFancyOutput = false; break;
+            case 'n': g_pAbysspicker->m_bNotify = true; break;
+            case 'a': g_pAbysspicker->m_bAutoCopy = true; break;
+            case 'r': g_pAbysspicker->m_bRenderInactive = true; break;
+            case 'z': g_pAbysspicker->m_bNoZoom = true; break;
+            case 't': g_pAbysspicker->m_bNoFractional = true; break;
             case 'q': Debug::quiet = true; break;
             case 'v': Debug::verbose = true; break;
-            case 'd': g_pHyprpicker->m_bDisablePreview = true; break;
-            case 'c': g_pHyprpicker->m_bIncludeCursor = true; break;
-            case 'l': g_pHyprpicker->m_bUseLowerCase = true; break;
+            case 'd': g_pAbysspicker->m_bDisablePreview = true; break;
+            case 'c': g_pAbysspicker->m_bIncludeCursor = true; break;
+            case 'l': g_pAbysspicker->m_bUseLowerCase = true; break;
             case 'V': {
-                std::cout << "hyprpicker v" << HYPRPICKER_VERSION << "\n";
+                std::cout << "abysspicker v" << ABYSSPICKER_VERSION << "\n";
                 exit(0);
             }
             case 's': {
@@ -106,7 +106,7 @@ int main(int argc, char** argv, char** envp) {
                     exit(1);
                 }
 
-                g_pHyprpicker->m_fZoomScale = value;
+                g_pAbysspicker->m_fZoomScale = value;
                 break;
             }
 
@@ -124,7 +124,7 @@ int main(int argc, char** argv, char** envp) {
                     exit(1);
                 }
 
-                g_pHyprpicker->m_iCircleRadius = value;
+                g_pAbysspicker->m_iCircleRadius = value;
                 break;
             }
             default: help(); exit(1);
@@ -132,26 +132,26 @@ int main(int argc, char** argv, char** envp) {
     }
 
     if (!isatty(fileno(stdout)) || getenv("NO_COLOR"))
-        g_pHyprpicker->m_bFancyOutput = false;
+        g_pAbysspicker->m_bFancyOutput = false;
 
-    if (g_pHyprpicker->m_sOutputFormat.empty()) {
-        switch (g_pHyprpicker->m_bSelectedOutputMode) {
-            case OUTPUT_CMYK: g_pHyprpicker->m_sOutputFormat = "{}% {}% {}% {}%"; break;
-            case OUTPUT_HEX: g_pHyprpicker->m_sOutputFormat = "#{}{}{}"; break;
-            case OUTPUT_RGB: g_pHyprpicker->m_sOutputFormat = "{} {} {}"; break;
-            case OUTPUT_HSL: g_pHyprpicker->m_sOutputFormat = "{} {}% {}%"; break;
-            case OUTPUT_HSV: g_pHyprpicker->m_sOutputFormat = "{} {}% {}%"; break;
+    if (g_pAbysspicker->m_sOutputFormat.empty()) {
+        switch (g_pAbysspicker->m_bSelectedOutputMode) {
+            case OUTPUT_CMYK: g_pAbysspicker->m_sOutputFormat = "{}% {}% {}% {}%"; break;
+            case OUTPUT_HEX: g_pAbysspicker->m_sOutputFormat = "#{}{}{}"; break;
+            case OUTPUT_RGB: g_pAbysspicker->m_sOutputFormat = "{} {} {}"; break;
+            case OUTPUT_HSL: g_pAbysspicker->m_sOutputFormat = "{} {}% {}%"; break;
+            case OUTPUT_HSV: g_pAbysspicker->m_sOutputFormat = "{} {}% {}%"; break;
         }
     }
     try {
         std::array<uint8_t, 4> dummy = {0, 0, 0, 0};
-        (void)std::vformat(g_pHyprpicker->m_sOutputFormat, std::make_format_args(dummy[0], dummy[1], dummy[2], dummy[3]));
+        (void)std::vformat(g_pAbysspicker->m_sOutputFormat, std::make_format_args(dummy[0], dummy[1], dummy[2], dummy[3]));
     } catch (const std::format_error& e) {
         Debug::log(NONE, "Invalid --output-format: %s", e.what());
         exit(1);
     }
 
-    g_pHyprpicker->init();
+    g_pAbysspicker->init();
 
     return 0;
 }

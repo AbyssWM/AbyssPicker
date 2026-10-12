@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../defines.hpp"
-#include <hyprutils/math/Vector2D.hpp>
-using namespace Hyprutils::Math;
+#include <abyssutils/math/Vector2D.hpp>
+using namespace Abyssutils::Math;
 
 class CLayerSurface;
 

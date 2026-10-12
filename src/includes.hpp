@@ -34,10 +34,10 @@
 #include <thread>
 #include <unordered_map>
 
-#include <hyprutils/memory/WeakPtr.hpp>
-#include <hyprutils/os/Process.hpp>
-using namespace Hyprutils::Memory;
-using namespace Hyprutils::OS;
+#include <abyssutils/memory/WeakPtr.hpp>
+#include <abyssutils/os/Process.hpp>
+using namespace Abyssutils::Memory;
+using namespace Abyssutils::OS;
 
 #define SP CSharedPointer
 #define WP CWeakPointer

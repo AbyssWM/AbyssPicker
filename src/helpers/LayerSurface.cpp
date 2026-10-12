@@ -1,36 +1,36 @@
 #include "LayerSurface.hpp"
 
-#include "../hyprpicker.hpp"
+#include "../abysspicker.hpp"
 
 CLayerSurface::CLayerSurface(SMonitor* pMonitor) : m_pMonitor(pMonitor) {
-    pSurface = makeShared<CCWlSurface>(g_pHyprpicker->m_pCompositor->sendCreateSurface());
+    pSurface = makeShared<CCWlSurface>(g_pAbysspicker->m_pCompositor->sendCreateSurface());
 
     if (!pSurface) {
-        Debug::log(CRIT, "The compositor did not allow hyprpicker a surface!");
-        g_pHyprpicker->finish(1);
+        Debug::log(CRIT, "The compositor did not allow abysspicker a surface!");
+        g_pAbysspicker->finish(1);
         return;
     }
 
-    if (!g_pHyprpicker->m_bNoFractional) {
-        pViewport = makeShared<CCWpViewport>(g_pHyprpicker->m_pViewporter->sendGetViewport(pSurface->resource()));
+    if (!g_pAbysspicker->m_bNoFractional) {
+        pViewport = makeShared<CCWpViewport>(g_pAbysspicker->m_pViewporter->sendGetViewport(pSurface->resource()));
 
         // this will not actually be used, as we assume we'll be fullscreen and we can get the real dimensions from screencopy, but we'll have
         // this for if we need it in the future
-        pFractionalScale = makeShared<CCWpFractionalScaleV1>(g_pHyprpicker->m_pFractionalMgr->sendGetFractionalScale(pSurface->resource()));
+        pFractionalScale = makeShared<CCWpFractionalScaleV1>(g_pAbysspicker->m_pFractionalMgr->sendGetFractionalScale(pSurface->resource()));
         pFractionalScale->setPreferredScale([this](CCWpFractionalScaleV1* r, uint32_t scale120) { //
             Debug::log(TRACE, "Received a preferredScale for %s: %.2f", m_pMonitor->name.c_str(), scale120 / 120.F);
             fractionalScale = scale120 / 120.F;
             wantsReload     = true;
-            g_pHyprpicker->recheckACK();
+            g_pAbysspicker->recheckACK();
         });
     }
 
     pLayerSurface = makeShared<CCZwlrLayerSurfaceV1>(
-        g_pHyprpicker->m_pLayerShell->sendGetLayerSurface(pSurface->resource(), pMonitor->output->resource(), ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY, "hyprpicker"));
+        g_pAbysspicker->m_pLayerShell->sendGetLayerSurface(pSurface->resource(), pMonitor->output->resource(), ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY, "abysspicker"));
 
     if (!pLayerSurface) {
-        Debug::log(CRIT, "The compositor did not allow hyprpicker a layersurface!");
-        g_pHyprpicker->finish(1);
+        Debug::log(CRIT, "The compositor did not allow abysspicker a layersurface!");
+        g_pAbysspicker->finish(1);
         return;
     }
 
@@ -40,7 +40,7 @@ CLayerSurface::CLayerSurface(SMonitor* pMonitor) : m_pMonitor(pMonitor) {
         wantsACK         = true;
         working          = true;
 
-        g_pHyprpicker->recheckACK();
+        g_pAbysspicker->recheckACK();
     });
 
     pLayerSurface->sendSetSize(0, 0);
@@ -50,7 +50,7 @@ CLayerSurface::CLayerSurface(SMonitor* pMonitor) : m_pMonitor(pMonitor) {
     pLayerSurface->sendSetKeyboardInteractivity(1);
     pSurface->sendCommit();
 
-    wl_display_flush(g_pHyprpicker->m_pWLDisplay);
+    wl_display_flush(g_pAbysspicker->m_pWLDisplay);
 }
 
 CLayerSurface::~CLayerSurface() {
@@ -58,15 +58,15 @@ CLayerSurface::~CLayerSurface() {
     pSurface.reset();
     frameCallback.reset();
 
-    if (g_pHyprpicker->m_pWLDisplay)
-        wl_display_flush(g_pHyprpicker->m_pWLDisplay);
+    if (g_pAbysspicker->m_pWLDisplay)
+        wl_display_flush(g_pAbysspicker->m_pWLDisplay);
 }
 
 // this has to be a separate function because frameCallback.reset() will destroy the listener func
 static void onCallbackDone(CLayerSurface* surf, uint32_t when) {
     surf->frameCallback.reset();
 
-    g_pHyprpicker->renderSurface(surf);
+    g_pAbysspicker->renderSurface(surf);
 }
 
 void CLayerSurface::sendFrame() {
@@ -79,7 +79,7 @@ void CLayerSurface::sendFrame() {
     pSurface->sendDamageBuffer(0, 0, 0xFFFF, 0xFFFF);
 
     pSurface->sendAttach(PBUFFER->buffer.get(), 0, 0);
-    if (!g_pHyprpicker->m_bNoFractional) {
+    if (!g_pAbysspicker->m_bNoFractional) {
         pSurface->sendSetBufferScale(1);
         pViewport->sendSetDestination(m_pMonitor->size.x, m_pMonitor->size.y);
     } else

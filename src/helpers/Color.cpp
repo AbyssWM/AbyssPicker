@@ -1,6 +1,6 @@
 #include "Color.hpp"
 #include <algorithm>
-#include "../hyprpicker.hpp"
+#include "../abysspicker.hpp"
 
 static float fmax3(float a, float b, float c) {
     return (a > b && a > c) ? a : (b > c) ? b : c;

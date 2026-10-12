@@ -1,8 +1,8 @@
 .Dd $Mdocdate: November 14 2022 $
-.Dt HYPRPICKER 1
+.Dt ABYSSPICKER 1
 .Os Linux
 .Sh NAME
-.Nm hyprpicker
+.Nm abysspicker
 .Nd wlroots-compatible wayland color picker
 .Sh SYNOPSIS
 .Nm
@@ -69,20 +69,20 @@ If set, disables colored output.
 .Sh EXAMPLES
 Get a pixels color:
 .Pp
-.Dl $ hyprpicker
+.Dl $ abysspicker
 .Pp
 Get a pixels color in HSL, wrapped in a CSS
 .Fn hsl
 function:
 .Pp
-.Dl $ hyprpicker -f hsl | sed 's/^/hsl(/; s/$/)/; y/ /,/'
+.Dl $ abysspicker -f hsl | sed 's/^/hsl(/; s/$/)/; y/ /,/'
 .Sh SEE ALSO
-.Xr hyprctl 1 ,
-.Xr hyprland 1 ,
+.Xr abyssctl 1 ,
+.Xr abyssland 1 ,
 .Xr sed 1 ,
 .Xr wl-copy 1
 .Pp
-.Lk https://github.com/hyprwm/hyprpicker "The Hyprpicker Sources"
+.Lk https://github.com/AbyssWM/abysspicker "The Abysspicker Sources"
 .Sh AUTHORS
 .An -nosplit
 The
@@ -92,4 +92,4 @@ utility was originally written by
 and the manual page by
 .An Thomas Voss Aq Mt mail@thomasvoss.com .
 .Sh BUGS
-.Lk https://github.com/hyprwm/hyprpicker/issues "The Hyprpicker Bug Tracker"
+.Lk https://github.com/AbyssWM/abysspicker/issues "The Abysspicker Bug Tracker"
