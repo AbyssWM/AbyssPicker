@@ -1,25 +1,29 @@
 <div align="center">
 
-<img src="https://github.com/AbyssWM.png?size=200" width="160" alt="Abyss logo">
+<img src="https://github.com/AbyssWM.png?size=200" width="140" alt="Abyss logo">
 
-# AbyssPicker
+# 🎨 AbyssPicker
 
 **Color picker for Abyssland.**
 
-Part of [**Abyss**](https://github.com/AbyssWM) · Based on [hyprpicker](https://github.com/hyprwm/hyprpicker) by [hyprwm](https://github.com/hyprwm)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue?style=flat-square)](LICENSE) [![Fedora COPR](https://img.shields.io/badge/fedora-COPR-51a2da?style=flat-square&logo=fedora&logoColor=white)](https://copr.fedorainfracloud.org/coprs/bb8therobot1717/Abyss/) [![Wayland](https://img.shields.io/badge/wayland-native-ffbc00?style=flat-square&logo=wayland&logoColor=black)](https://wayland.freedesktop.org/) [![C++](https://img.shields.io/badge/C%2B%2B-26-00599c?style=flat-square&logo=cplusplus&logoColor=white)](https://isocpp.org/) [![Stars](https://img.shields.io/github/stars/AbyssWM/AbyssPicker?style=flat-square&color=7c3aed)](https://github.com/AbyssWM/AbyssPicker/stargazers)
+
+[🌐 Website](https://abysswm.github.io/) · [📖 Wiki](https://abysswm.github.io/wiki/getting-started) · [📦 Install](#-install) · [🌊 Ecosystem](#-the-abyss-ecosystem)
+
+<sub>Part of <a href="https://github.com/AbyssWM"><b>Abyss</b></a> · based on <a href="https://github.com/hyprwm/hyprpicker">hyprpicker</a> by <a href="https://github.com/hyprwm">hyprwm</a></sub>
 
 </div>
 
 ---
 
 > [!WARNING]
-> **Early development.** Abyss is being rebranded and reworked right now. Nothing is ready for daily use yet.
+> **Experimental, pre-1.0.** Packages exist for several distributions, but expect rough edges and breaking changes.
 
-## About
+## ✨ About
 
 AbyssPicker is a wlroots-compatible Wayland color picker that does not suck: launch it, click, done. It needs `zwlr_screencopy_manager_v1`.
 
-AbyssPicker is a fork of [hyprpicker](https://github.com/hyprwm/hyprpicker). Every Abyss library and tool is forked and renamed, so the whole ecosystem builds and updates as one – independent of system packages.
+AbyssPicker is a fork of [hyprpicker](https://github.com/hyprwm/hyprpicker). Every Abyss library and tool is forked and renamed, so the whole ecosystem builds and updates as one.
 
 ![abysspickerShort](https://user-images.githubusercontent.com/43317083/188224867-7d77a3b3-0a66-488c-8019-39b00060ab42.gif)
 
@@ -31,75 +35,106 @@ Launch it. Click. That's it.
 
 See `abysspicker --help`.
 
-## Installation
-
-### Abyss ecosystem
-
-AbyssPicker installs to `/opt/abyss` together with the other Abyss components (build with `sh tools/build.sh AbyssPicker` from AbysslandWC, or the CMake commands below with `-DCMAKE_INSTALL_PREFIX=/opt/abyss`). Its dependencies (Abyssutils, Abyss-scanner) must be installed there first; use `PKG_CONFIG_PATH=/opt/abyss/lib/pkgconfig`.
-
-### Manual (Building)
-
-Install dependencies:
- - cmake
- - pkg-config
- - pango
- - cairo
- - wayland
- - wayland-protocols
- - abyssutils
- - xkbcommon
-
-Building is done via CMake:
-
-```sh
-cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=/opt/abyss -S . -B ./build
-cmake --build ./build --config Release --target abysspicker -j`nproc 2>/dev/null || getconf _NPROCESSORS_CONF`
-```
-
-Install with:
-
-```sh
-cmake --install ./build
-```
-
 ## Caveats
 
 AbyssPicker needs the `zwlr_screencopy_manager_v1` and `zwlr_layer_shell_v1` protocols. Abyssland can disable `zwlr_screencopy_manager_v1` via its config (`c.protocol`); in that case the picker will not work. This is intentional and the user's responsibility.
 
 "Freezes" your displays when picking the color.
 
-## The Abyss ecosystem
+## 📦 Install
 
-| Repository | Based on |
-|---|---|
-| [Abyssland](https://github.com/AbyssWM/Abyssland) | [Hyprland](https://github.com/hyprwm/Hyprland) |
-| [Abyssal](https://github.com/AbyssWM/Abyssal) | [aquamarine](https://github.com/hyprwm/aquamarine) |
-| [Abyssutils](https://github.com/AbyssWM/Abyssutils) | [hyprutils](https://github.com/hyprwm/hyprutils) |
-| [Abyssparse](https://github.com/AbyssWM/Abyssparse) | [hyprlang](https://github.com/hyprwm/hyprlang) |
-| [Abysscursor](https://github.com/AbyssWM/Abysscursor) | [hyprcursor](https://github.com/hyprwm/hyprcursor) |
-| [Abyssgraphics](https://github.com/AbyssWM/Abyssgraphics) | [hyprgraphics](https://github.com/hyprwm/hyprgraphics) |
-| [Abysswire](https://github.com/AbyssWM/Abysswire) | [hyprwire](https://github.com/hyprwm/hyprwire) |
-| [Abyss-scanner](https://github.com/AbyssWM/Abyss-scanner) | [hyprwayland-scanner](https://github.com/hyprwm/hyprwayland-scanner) |
-| [Abyssland-protocols](https://github.com/AbyssWM/Abyssland-protocols) | [hyprland-protocols](https://github.com/hyprwm/hyprland-protocols) |
-| [Xdg-desktop-portal-abyss](https://github.com/AbyssWM/Xdg-desktop-portal-abyss) | [xdg-desktop-portal-hyprland](https://github.com/hyprwm/xdg-desktop-portal-hyprland) |
-| [Abysstoolkit](https://github.com/AbyssWM/Abysstoolkit) | [hyprtoolkit](https://github.com/hyprwm/hyprtoolkit) |
-| [Abyss-guiutils](https://github.com/AbyssWM/Abyss-guiutils) | [hyprland-guiutils](https://github.com/hyprwm/hyprland-guiutils) |
-| [AbyssDusk](https://github.com/AbyssWM/AbyssDusk) | [hyprsunset](https://github.com/hyprwm/hyprsunset) |
-| [AbyssLock](https://github.com/AbyssWM/AbyssLock) | [hyprlock](https://github.com/hyprwm/hyprlock) |
-| [AbyssPaper](https://github.com/AbyssWM/AbyssPaper) | [hyprpaper](https://github.com/hyprwm/hyprpaper) |
-| **AbyssPicker** | [hyprpicker](https://github.com/hyprwm/hyprpicker) |
+<details open>
+<summary><b>Fedora 44 / 45</b> — COPR</summary>
 
-## Credits
+```sh
+sudo dnf copr enable bb8therobot1717/Abyss
+sudo dnf install abysspicker
+```
+</details>
+
+<details>
+<summary><b>Arch Linux</b> — PKGBUILD</summary>
+
+```sh
+git clone https://github.com/AbyssWM/arch-builds.git
+cd arch-builds/packages/abysspicker && makepkg -si
+```
+</details>
+
+<details>
+<summary><b>Gentoo</b> — overlay</summary>
+
+```sh
+eselect repository add abyss git https://github.com/AbyssWM/gentoo-builds.git
+emaint sync -r abyss
+emerge --ask gui-apps/abysspicker
+```
+</details>
+
+<details>
+<summary><b>Void Linux</b> — xbps-src template</summary>
+
+Copy `srcpkgs/abysspicker` from [void-builds](https://github.com/AbyssWM/void-builds) into your `void-packages` checkout, then:
+
+```sh
+./xbps-src pkg abysspicker && sudo xbps-install -R hostdir/binpkgs abysspicker
+```
+</details>
+
+<details>
+<summary><b>Debian · Ubuntu · Linux Mint</b></summary>
+
+Packaging lives in [debian-builds](https://github.com/AbyssWM/debian-builds) and [ubuntu-builds](https://github.com/AbyssWM/ubuntu-builds). A signed APT repository is on the way — see the [install guide](https://abysswm.github.io/wiki/getting-started) for the current status.
+</details>
+
+### 🔨 Build from source
+
+Install the Abyss libraries it depends on first (see the [install guide](https://abysswm.github.io/wiki/getting-started)), then:
+
+```sh
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+cmake --build build
+sudo cmake --install build
+```
+
+## 🌊 The Abyss ecosystem
+
+<details>
+<summary>All 17 repositories</summary>
+
+| Repository | Role | Based on |
+|---|---|---|
+| 🪟 [Abyssland](https://github.com/AbyssWM/Abyssland) | compositor | [Hyprland](https://github.com/hyprwm/Hyprland) |
+| 📚 [Abyssal](https://github.com/AbyssWM/Abyssal) | library | [aquamarine](https://github.com/hyprwm/aquamarine) |
+| 📚 [Abyssutils](https://github.com/AbyssWM/Abyssutils) | library | [hyprutils](https://github.com/hyprwm/hyprutils) |
+| 📚 [Abyssparse](https://github.com/AbyssWM/Abyssparse) | library | [hyprlang](https://github.com/hyprwm/hyprlang) |
+| 📚 [Abysscursor](https://github.com/AbyssWM/Abysscursor) | library | [hyprcursor](https://github.com/hyprwm/hyprcursor) |
+| 📚 [Abyssgraphics](https://github.com/AbyssWM/Abyssgraphics) | library | [hyprgraphics](https://github.com/hyprwm/hyprgraphics) |
+| 📚 [Abysswire](https://github.com/AbyssWM/Abysswire) | library | [hyprwire](https://github.com/hyprwm/hyprwire) |
+| 🛠️ [Abyss-scanner](https://github.com/AbyssWM/Abyss-scanner) | tool | [hyprwayland-scanner](https://github.com/hyprwm/hyprwayland-scanner) |
+| 📜 [Abyssland-protocols](https://github.com/AbyssWM/Abyssland-protocols) | protocols | [hyprland-protocols](https://github.com/hyprwm/hyprland-protocols) |
+| 🧩 [Xdg-desktop-portal-abyss](https://github.com/AbyssWM/Xdg-desktop-portal-abyss) | portal | [xdg-desktop-portal-hyprland](https://github.com/hyprwm/xdg-desktop-portal-hyprland) |
+| 📚 [Abysstoolkit](https://github.com/AbyssWM/Abysstoolkit) | library | [hyprtoolkit](https://github.com/hyprwm/hyprtoolkit) |
+| 🌙 [Abyss-guiutils](https://github.com/AbyssWM/Abyss-guiutils) | app | [hyprland-guiutils](https://github.com/hyprwm/hyprland-guiutils) |
+| 🌙 [AbyssDusk](https://github.com/AbyssWM/AbyssDusk) | app | [hyprsunset](https://github.com/hyprwm/hyprsunset) |
+| 🔒 [AbyssLock](https://github.com/AbyssWM/AbyssLock) | app | [hyprlock](https://github.com/hyprwm/hyprlock) |
+| 🖼️ [AbyssPaper](https://github.com/AbyssWM/AbyssPaper) | app | [hyprpaper](https://github.com/hyprwm/hyprpaper) |
+| 🎨 **AbyssPicker** | app | [hyprpicker](https://github.com/hyprwm/hyprpicker) |
+| 🔐 [AbyssPolkit](https://github.com/AbyssWM/AbyssPolkit) | app | [hyprpolkitagent](https://github.com/hyprwm/hyprpolkitagent) |
+
+</details>
+
+## 💜 Credits
 
 AbyssPicker exists thanks to **[hyprpicker](https://github.com/hyprwm/hyprpicker)**, created by **vaxerski / Hypr Development** at **[hyprwm](https://github.com/hyprwm)**. All credit for the original work goes to them – please support the original project.
 
 Abyss is an independent project and is **not affiliated with or endorsed by hyprwm**.
 
-## License
+## ⚖️ License
 
 This project is licensed under the **BSD 3-Clause License**. The original copyright notice is kept in [`LICENSE`](LICENSE) as required.
 
-## Contributors
+## 👥 Contributors
 
 - [bb8TheRobot](https://github.com/bb8TheRobot)
 - Claude (Anthropic) – AI pair programmer
