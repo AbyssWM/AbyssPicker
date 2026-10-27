@@ -152,6 +152,9 @@ void CAbysspicker::finish(int code) {
 }
 
 void CAbysspicker::outputColor() {
+    // the pointer left every surface (leave) and a key or button came before the next enter
+    if (!m_pLastSurface)
+        return;
 
     // relative brightness of a color
     // https://www.w3.org/TR/2008/REC-WCAG20-20081211/#relativeluminancedef
@@ -179,7 +182,7 @@ void CAbysspicker::outputColor() {
             if (m_bFancyOutput)
                 Debug::log(NONE, "\033[38;2;%i;%i;%i;48;2;%i;%i;%im%s\033[0m", FG, FG, FG, COL.r, COL.g, COL.b, formattedColor.c_str());
             else
-                Debug::log(NONE, formattedColor.c_str());
+                Debug::log(NONE, "%s", formattedColor.c_str());
 
             if (m_bAutoCopy)
                 NClipboard::copy(formattedColor);
@@ -205,7 +208,7 @@ void CAbysspicker::outputColor() {
             if (m_bFancyOutput)
                 Debug::log(NONE, "\033[38;2;%i;%i;%i;48;2;%i;%i;%im%s\033[0m", FG, FG, FG, COL.r, COL.g, COL.b, formattedColor.c_str());
             else
-                Debug::log(NONE, formattedColor.c_str());
+                Debug::log(NONE, "%s", formattedColor.c_str());
 
             if (m_bAutoCopy)
                 NClipboard::copy(hexColor);
@@ -222,7 +225,7 @@ void CAbysspicker::outputColor() {
             if (m_bFancyOutput)
                 Debug::log(NONE, "\033[38;2;%i;%i;%i;48;2;%i;%i;%im%s\033[0m", FG, FG, FG, COL.r, COL.g, COL.b, formattedColor.c_str());
             else
-                Debug::log(NONE, formattedColor.c_str());
+                Debug::log(NONE, "%s", formattedColor.c_str());
 
             if (m_bAutoCopy)
                 NClipboard::copy(formattedColor);
@@ -245,7 +248,7 @@ void CAbysspicker::outputColor() {
             if (m_bFancyOutput)
                 Debug::log(NONE, "\033[38;2;%i;%i;%i;48;2;%i;%i;%im%s\033[0m", FG, FG, FG, COL.r, COL.g, COL.b, formattedColor.c_str());
             else
-                Debug::log(NONE, formattedColor.c_str());
+                Debug::log(NONE, "%s", formattedColor.c_str());
 
             if (m_bAutoCopy)
                 NClipboard::copy(formattedColor);
@@ -720,6 +723,8 @@ void CAbysspicker::initKeyboard() {
             return;
         if (m_pXKBState) {
             int32_t XKBKey = xkb_state_key_get_one_sym(m_pXKBState, key + 8);
+            if (!m_pLastSurface && XKBKey != XKB_KEY_Escape)
+                return;
             if (XKBKey == XKB_KEY_Right)
                 m_vLastCoords.x += m_vLastCoords.x < m_pLastSurface->m_pMonitor->size.x;
             else if (XKBKey == XKB_KEY_Left)
